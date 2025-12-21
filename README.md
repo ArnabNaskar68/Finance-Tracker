@@ -1,0 +1,1 @@
+"Chart" Js is the base engine while "react-chartjs-2" is the react wrapper made specifically for React.

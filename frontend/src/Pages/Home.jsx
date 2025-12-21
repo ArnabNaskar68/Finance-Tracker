@@ -1,11 +1,31 @@
-import { Link } from 'react-router-dom';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend
+);
 import {useState} from 'react';
+import { Bar } from "react-chartjs-2";
 
 export default function Home() {
   const [input, setInput] = useState("");
   const [tag, setTag] = useState(null);
   const [list, setList] = useState([]);
-
+  // const [Final, setFinal] = useState(0)
   const handleInput = (e) => {
     e.preventDefault();
     if (!tag) {
@@ -16,7 +36,7 @@ export default function Home() {
 
     const valueSection = {
       id: id,
-      value: input,
+      value: Number(input),
       tag: tag
     };
     setList(prev => [...prev, valueSection]);
@@ -25,8 +45,37 @@ export default function Home() {
     setTag(null);
   };
 
+  const foodTotal = list
+  .filter(item => item.tag === "Food")
+  .reduce((sum, item) => sum + Number(item.value), 0);
+
+  const entertainmentTotal = list
+  .filter(item => item.tag === "Entertainment")
+  .reduce((sum, item) => sum + Number(item.value), 0);
+
+  const lifestyleTotal = list
+  .filter(item => item.tag === "Lifestyle")
+  .reduce((sum, item) => sum + Number(item.value), 0);
+
+    const Final = 1000;
+  const totalExpenses = foodTotal + entertainmentTotal + lifestyleTotal;
+  const savingsTotal = Final - totalExpenses;
+
+    const data = {
+  labels: ["Food", "Lifestyle", "Entertainment", "Savings"],
+  datasets: [
+    {
+      label: "Todays Expenses",
+      data: [foodTotal, lifestyleTotal, entertainmentTotal, savingsTotal],
+      backgroundColor: "rgba(54, 162, 235, 0.6)"
+    }
+  ]
+};
+
+
+
   return (
-    <div className='flex flex-row min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100'>
+    <div className='flex flex-row min-h-screen bg-linear-to-br from-blue-50 to-indigo-100'>
       {/* Sidebar */}
       <div className='w-1/3 bg-white shadow-lg rounded-r-3xl p-8 flex flex-col'>
         {/* Add Expense Section */}
@@ -104,29 +153,10 @@ export default function Home() {
       {/* Main Content */}
       <div className='flex-1 p-8'>
         <div className='h-full bg-white rounded-l-3xl shadow-lg flex items-center justify-center'>
-          <div className='text-center'>
-            <h2 className='text-4xl font-bold text-gray-800 mb-4'>Welcome to Finance Tracker</h2>
-            <p className='text-xl text-gray-600 mb-8'>Manage your expenses with ease</p>
-            <div className='grid grid-cols-3 gap-6 max-w-2xl mx-auto'>
-              <div className='bg-blue-50 p-6 rounded-xl'>
-                <div className='text-3xl mb-2'>📊</div>
-                <h3 className='font-semibold text-gray-800'>Track Spending</h3>
-                <p className='text-sm text-gray-600'>Monitor your daily expenses</p>
-              </div>
-              <div className='bg-green-50 p-6 rounded-xl'>
-                <div className='text-3xl mb-2'>🏷️</div>
-                <h3 className='font-semibold text-gray-800'>Categorize</h3>
-                <p className='text-sm text-gray-600'>Organize by categories</p>
-              </div>
-              <div className='bg-purple-50 p-6 rounded-xl'>
-                <div className='text-3xl mb-2'>📈</div>
-                <h3 className='font-semibold text-gray-800'>Analyze</h3>
-                <p className='text-sm text-gray-600'>View spending patterns</p>
-              </div>
-            </div>
-          </div>
-        </div>
+          <Bar data={data} />
+          
       </div>
+    </div>
     </div>
   );
 }
