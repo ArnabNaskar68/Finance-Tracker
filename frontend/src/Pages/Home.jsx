@@ -50,6 +50,7 @@ export default function Home() {
     }
     //adding the current input in list as object format
     const newList = [...list, bind];
+    //adding the updates value to js variable and not a react state
     setList(newList);
     
     const foodSumNew = newList.filter(item=> item.Tag==="Food")
