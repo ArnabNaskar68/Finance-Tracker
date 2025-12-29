@@ -6,11 +6,12 @@ dotenv.config();
 
 const app=express();
 const Port= process.env.PORT;
+const Origin=process.env.ORIGIN;
 
 //middlewires
 app.use(express.json());
 app.use(cors({
-    origin:"http://localhost:5173"
+    origin:Origin
 }));
 
 app.post('/', (req,res)=>{
