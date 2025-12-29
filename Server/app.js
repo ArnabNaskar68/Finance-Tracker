@@ -1,10 +1,24 @@
 import express from 'express';
-const app=express();
-const port=3000;
+import cors from 'cors';
+import dotenv from "dotenv";
+dotenv.config();
 
-app.get('/', (req,res)=>{
-res.send('Hello World')
+
+const app=express();
+const Port= process.env.PORT;
+
+//middlewires
+app.use(express.json());
+app.use(cors({
+    origin:"http://localhost:5173"
+}));
+
+app.post('/', (req,res)=>{
+const {date, food, entertainment, lifestyle}=req.body;
+console.log(`date:${date} totaoFood:${food} enetrtainment:${entertainment} lifestyle:${lifestyle}`)
+res.status(200).json({ message: "Data received" });
+
 })
 
-app.listen(port);
-console.log(`http://localhost:${port}/`);
+app.listen(Port);
+console.log(`http://localhost:${Port}/`);

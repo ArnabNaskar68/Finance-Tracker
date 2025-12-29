@@ -26,53 +26,83 @@ export default function Home() {
   const [tag, setTag] = useState(null);
   const [list, setList] = useState([]);
   // const [Final, setFinal] = useState(0)
-  const handleInput = (e) => {
-    e.preventDefault();
-    if (!tag) {
-      alert("No tag was marked");
-    }
 
+
+  const [foodSum, setFoodSum]= useState(0);
+  const [entertainmentSum, setEntertainmentSum]= useState(0);
+  const [lifestyleSum, setLifestyleSum]= useState(0);
+
+  async function handleInput(e){
+  try{
+    e.preventDefault();
+    const today=new Date();
+    const year=today.getFullYear();
+    const month=today.getMonth();
+    const day=today.getDate();
+
+    //user inputs are kept in array called list from where the tagged value is being filtered out
     const id = crypto.randomUUID();
 
-    const valueSection = {
-      id: id,
-      value: Number(input),
-      tag: tag
-    };
-    setList(prev => [...prev, valueSection]);
-
-    setInput("");
-    setTag(null);
-  };
-
-  const foodTotal = list
-  .filter(item => item.tag === "Food")
-  .reduce((sum, item) => sum + Number(item.value), 0);
-
-  const entertainmentTotal = list
-  .filter(item => item.tag === "Entertainment")
-  .reduce((sum, item) => sum + Number(item.value), 0);
-
-  const lifestyleTotal = list
-  .filter(item => item.tag === "Lifestyle")
-  .reduce((sum, item) => sum + Number(item.value), 0);
-
-    const Final = 1000;
-  const totalExpenses = foodTotal + entertainmentTotal + lifestyleTotal;
-  const savingsTotal = Final - totalExpenses;
-
-    const data = {
-  labels: ["Food", "Lifestyle", "Entertainment", "Savings"],
-  datasets: [
-    {
-      label: "Todays Expenses",
-      data: [foodTotal, lifestyleTotal, entertainmentTotal, savingsTotal],
-      backgroundColor: "rgba(54, 162, 235, 0.6)"
+    const bind={
+      Id:id,
+      Input:input,
+      Tag:tag
     }
-  ]
-};
+    //adding the current input in list as object format
+    const newList = [...list, bind];
+    setList(newList);
+    
+    const foodSumNew = newList.filter(item=> item.Tag==="Food")
+    .reduce((sum,item)=> sum+ Number(item.Input),0);
 
+    const entertainmentSumNew = newList.filter(item=> item.Tag==="Entertainment")
+    .reduce((sum,item)=> sum+ Number(item.Input),0);
 
+    const lifestyleSumNew = newList.filter(item=> item.Tag==="Lifestyle")
+    .reduce((sum,item)=> sum+ Number(item.Input),0);
+
+    setFoodSum(foodSumNew);
+    setEntertainmentSum(entertainmentSumNew);
+    setLifestyleSum(lifestyleSumNew);
+
+    const post_values={
+      date:`${day}/${month}/${year}`,
+      food:foodSumNew,
+      entertainment:entertainmentSumNew,
+      lifestyle:lifestyleSumNew
+    }
+
+    const response=await fetch("http://localhost:3000",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type": "application/json"
+        },
+        body:JSON.stringify(post_values)
+      }
+      
+    );
+     if (!response.ok) {
+      throw new Error("Request failed");
+    }
+
+    const data = await response.json();
+    console.log("Server response:", data);
+
+  }catch(error){
+    console.log("error faced:", error);
+  }
+  }
+  const display_chart = {
+    labels: ["Food", "Lifestyle", "Entertainment"],
+    datasets: [
+      {
+        label: "Todays Expenses",
+        data: [foodSum, lifestyleSum, entertainmentSum],
+        backgroundColor: "rgba(54, 162, 235, 0.6)"
+      }
+    ]
+    };
 
   return (
     <div className='flex flex-row min-h-screen bg-linear-to-br from-blue-50 to-indigo-100'>
@@ -100,22 +130,19 @@ export default function Home() {
                   onClick={() => setTag("Food")}
                   className={`w-full text-left px-4 py-2 rounded-lg transition duration-200 border ${tag === "Food" ? 'bg-blue-500 text-white border-blue-500' : 'bg-gray-100 hover:bg-blue-100 border-gray-200'}`}
                 >
-                  🍕 Food
-                </button>
+                Food</button>
                 <button
                   type='button'
                   onClick={() => setTag("Entertainment")}
                   className={`w-full text-left px-4 py-2 rounded-lg transition duration-200 border ${tag === "Entertainment" ? 'bg-blue-500 text-white border-blue-500' : 'bg-gray-100 hover:bg-blue-100 border-gray-200'}`}
                 >
-                  🎬 Entertainment
-                </button>
+                Entertainment</button>
                 <button
                   type='button'
                   onClick={() => setTag("Lifestyle")}
                   className={`w-full text-left px-4 py-2 rounded-lg transition duration-200 border ${tag === "Lifestyle" ? 'bg-blue-500 text-white border-blue-500' : 'bg-gray-100 hover:bg-blue-100 border-gray-200'}`}
                 >
-                  🏠 Lifestyle
-                </button>
+                Lifestyle</button>
               </div>
             </div>
             <button
@@ -137,10 +164,10 @@ export default function Home() {
             ) : (
               <ul className='space-y-3'>
                 {list.map((item) => (
-                  <li key={item.id} className='bg-white p-3 rounded-md shadow-sm border border-gray-200'>
+                  <li key={item.Id} className='bg-white p-3 rounded-md shadow-sm border border-gray-200'>
                     <div className='flex justify-between items-center'>
-                      <span className='font-medium text-gray-800'>${item.value}</span>
-                      <span className='text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded-full capitalize'>{item.tag}</span>
+                      <span className='font-medium text-gray-800'>${item.Input}</span>
+                      <span className='text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded-full capitalize'>{item.Tag}</span>
                     </div>
                   </li>
                 ))}
@@ -153,7 +180,7 @@ export default function Home() {
       {/* Main Content */}
       <div className='flex-1 p-8'>
         <div className='h-full bg-white rounded-l-3xl shadow-lg flex items-center justify-center'>
-          <Bar data={data} />
+          <Bar data={display_chart} />
           
       </div>
     </div>
