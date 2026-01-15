@@ -37,7 +37,7 @@ export default function Home() {
     e.preventDefault();
     const today=new Date();
     const year=today.getFullYear();
-    const month=today.getMonth();
+    const month=today.getMonth()+1;
     const day=today.getDate();
 
     //user inputs are kept in array called list from where the tagged value is being filtered out
@@ -167,7 +167,7 @@ export default function Home() {
                 {list.map((item) => (
                   <li key={item.Id} className='bg-white p-3 rounded-md shadow-sm border border-gray-200'>
                     <div className='flex justify-between items-center'>
-                      <span className='font-medium text-gray-800'>${item.Input}</span>
+                      <span className='font-medium text-gray-800'>₹{item.Input}</span>
                       <span className='text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded-full capitalize'>{item.Tag}</span>
                     </div>
                   </li>

@@ -1,5 +1,11 @@
 "Chart" Js is the base engine while "react-chartjs-2" is the react wrapper made specifically for React.
+Statrt frontend and backedn:
+    start frontend script: npm run dev
+    start backend script: nodemon app.js
 
+Installations:
+Install .env package
+Install mongoose : https://mongoosejs.com/docs/
 Installation Chart.js:https://www.chartjs.org/docs/latest/getting-started/installation.html
 Read data object configuration:https://www.chartjs.org/docs/latest/configuration/
 Read about implementing Chart.js:https://blog.logrocket.com/using-chart-js-react/#installing-chart-js-react-project
